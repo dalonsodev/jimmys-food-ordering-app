@@ -1,0 +1,93 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Favicons -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        <!-- Fonts and Icons -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add" />
+        <!-- Stylesheets -->
+        <link rel="stylesheet" href="index.css">
+    </head>
+    <body>
+        <header>
+            <div class="container">
+                <h1>Jimmy's Diner</h1>
+                <h2>The best burger and pizzas in town.</h2>
+            </div>
+        </header>
+        
+        <!-- Menu -->
+        <section id="menu-list" class="container">
+            <ul class="menu-list">
+                <!-- Menu items here (rendered with JS) -->
+            </ul>
+        </section>
+        
+        <!-- Order sent message -->
+        <section id="order-sent-section">
+            <div id="order-sent-container" class="order-sent-container hidden">
+                <span id="order-sent-message" class="order-sent-message"></span>
+            </div>
+            <button id="new-order-btn" class="new-order-btn hidden">+ New order</button>
+        </section>
+        
+        <!-- Costumer order -->
+        <section id="costumer-order" class="container costumer-order hidden">
+            <h3 class="user-order-title">Your Order</h3>
+            <ul id="order-list" class="order-list">
+                <!-- Added items here (rendered with JS) -->
+            </ul>
+            <hr class="separator-thick">
+            <ul>
+                <li class="item-added total-price">
+                    <p class="order-item-title">Total price:</p>
+                    <p id="order-total-price" class="order-item-price">0</p>
+                </li>
+            </ul>
+            <button id="complete-order-btn" class="btn-order">Complete order</button>
+        </section>
+        
+        <!-- Payment modal -->
+        <div id="payment-modal" class="payment-modal hidden">
+            <form id="payment-form" class="payment-form">
+                <legend class="payment-title">Enter card details</legend>
+                    <input 
+                        id="customer-name"
+                        class="payment-input" 
+                        type="text"
+                        title="Please, enter your name"
+                        minlength="2"
+                        maxlength="40"
+                        placeholder="Enter your name" 
+                        required
+                    >
+                    <input
+                        class="payment-input" 
+                        type="text"
+                        pattern="[0-9]{13,16}"
+                        minlength="13"
+                        maxlength="16"
+                        title="Please, enter a valid credit card number (13-16 digits)"
+                        placeholder="Enter card number" 
+                        required
+                    >
+                    <input
+                        class="payment-input" 
+                        type="text"
+                        pattern="[0-9]{3,4}"
+                        minlength="3"
+                        maxlength="4"
+                        title="Please, enter a valid CVV number (3-4 digits)"
+                        placeholder="Enter CVV" 
+                        required
+                    >
+                    <button id="pay-btn" class="btn-pay">Pay</button>
+            </form>
+        </div>
+	    <script src="index.js" type="module"></script>
+    </body>
+</html>
+
