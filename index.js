@@ -1,15 +1,8 @@
 import menuArray from './data.js'
 
-const menuList = document.getElementById('menu-list')
 const costumerOrder = document.getElementById('costumer-order')
 const orderList = document.getElementById('order-list')
-const orderTotalPrice = document.getElementById('order-total-price')
-const completeOrderBtn = document.getElementById('complete-order-btn')
 const paymentModal = document.getElementById('payment-modal')
-const closeModalBtn = document.getElementById('close-modal-btn')
-const payBtn = document.getElementById('pay-btn')
-const orderSentContainer = document.getElementById('order-sent-container')
-const orderSentMessage = document.getElementById('order-sent-message')
 const newOrderBtn = document.getElementById('new-order-btn')
 
 
@@ -30,19 +23,22 @@ document.addEventListener('click', (e) => {
    }
 })
 
-completeOrderBtn.addEventListener('click', (e) => paymentModal.classList.remove('hidden'))
+document.getElementById('complete-order-btn').addEventListener('click', (e) => 
+   paymentModal.classList.remove('hidden'))
 
-closeModalBtn.addEventListener('click', (e) => paymentModal.classList.add('hidden'))
+document.getElementById('close-modal-btn').addEventListener('click', (e) => 
+   paymentModal.classList.add('hidden'))
 
-payBtn.addEventListener('click', (e) => {
+document.getElementById('pay-btn').addEventListener('click', (e) => {
    e.preventDefault() // This is to prevent page reload after click (default behavior)
    paymentModal.classList.add('hidden')
    costumerOrder.classList.add('hidden')
-   orderSentContainer.classList.remove('hidden')
+   document.getElementById('order-sent-container').classList.remove('hidden')
    newOrderBtn.classList.remove('hidden')
    
    const customerName = document.getElementById('customer-name').value
-   orderSentMessage.textContent = `Thanks, ${customerName}! Your order is on its way!`
+   document.getElementById('order-sent-message').textContent = 
+      `Thanks, ${customerName}! Your order is on its way!`
 })
 
 newOrderBtn.addEventListener('click', () => location.reload())
@@ -76,7 +72,7 @@ function getTotalPrice() {
    const totalPrice = Array.from(orderList.querySelectorAll('.order-item-price'))
       .reduce( (total, priceEl) => total + parseInt(priceEl.textContent), 0)
    
-   orderTotalPrice.textContent = totalPrice
+   document.getElementById('order-total-price').textContent = totalPrice
 }
 
 function removeItem(itemToRemove) {
@@ -92,7 +88,7 @@ function removeItem(itemToRemove) {
       else {
          itemToRemove.remove()
          if (!orderList.children.length) {
-               costumerOrder.classList.add('hidden') // Hiding user's order section (bottom)
+            costumerOrder.classList.add('hidden') // Hiding user's order section (bottom)
          }
       }
       getTotalPrice()
@@ -122,4 +118,4 @@ function getMenuItems() {
    }).join('')
 }
 
-menuList.innerHTML = getMenuItems(menuArray)
+document.getElementById('menu-list').innerHTML = getMenuItems(menuArray)
