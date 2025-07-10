@@ -6,6 +6,7 @@ const orderList = document.getElementById('order-list')
 const orderTotalPrice = document.getElementById('order-total-price')
 const completeOrderBtn = document.getElementById('complete-order-btn')
 const paymentModal = document.getElementById('payment-modal')
+const closeModalBtn = document.getElementById('close-modal-btn')
 const payBtn = document.getElementById('pay-btn')
 const orderSentContainer = document.getElementById('order-sent-container')
 const orderSentMessage = document.getElementById('order-sent-message')
@@ -30,6 +31,8 @@ document.addEventListener('click', (e) => {
 })
 
 completeOrderBtn.addEventListener('click', (e) => paymentModal.classList.remove('hidden'))
+
+closeModalBtn.addEventListener('click', (e) => paymentModal.classList.add('hidden'))
 
 payBtn.addEventListener('click', (e) => {
    e.preventDefault() // This is to prevent page reload after click (default behavior)
