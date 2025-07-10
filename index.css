@@ -75,7 +75,7 @@ header {
 
 section {
    max-width: 413px;
-   margin: 0 auto;
+   margin: -1px auto;
    background: #ffffff;
 }
 
@@ -148,6 +148,10 @@ button {
 .costumer-order {
    text-align: center;
    padding-top: 0;
+   opacity: 1;
+   visibility: visible;
+   margin-top: -125px;
+   transition: all .3s ease-in-out;
 }
 
 .item-added {
@@ -221,6 +225,9 @@ button {
 .order-sent-message {
    color: var(--message-color);
    font-size: 24px;
+   opacity: 1;
+   visibility: visible;
+   transition: all 1s ease-in;
 }
 
 .new-order-btn {
@@ -245,6 +252,9 @@ button {
    background: white;
    box-shadow: 5px 5px 100px 20px gray;
    border-radius: 4px;
+   opacity: 1;
+   visibility: visible;
+   transition: all .3s ease-in-out;
 }
 
 .close-modal-btn {
@@ -287,5 +297,7 @@ button {
 /* Utility */
 
 .hidden {
-   display: none;
+   opacity: 0;
+   visibility: hidden;
+   transition: all .3s ease-in-out;
 }
