@@ -48,7 +48,7 @@ function completeOrder(customerName) {
    toggleHidden(costumerOrder, true)
    toggleHidden(orderSentContainer, false)
    toggleHidden(newOrderBtn, false)
-   orderSentMessage.textContent = `Thanks ${customerName}! Your order is on its way!`
+   orderSentMessage.textContent = `Thanks, ${customerName}! Your order is on its way!`
    document.querySelectorAll('[data-action="add"]').forEach(btn => {
       btn.disabled = true
       btn.setAttribute('aria-disabled', 'true')
