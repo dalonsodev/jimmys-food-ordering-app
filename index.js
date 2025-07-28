@@ -1,17 +1,22 @@
-// Imports
 import menuArray from './data.js'
 
-// Global variables
 const costumerOrder = document.getElementById('costumer-order')
 const orderList = document.getElementById('order-list')
 const paymentModal = document.getElementById('payment-modal')
 const newOrderBtn = document.getElementById('new-order-btn')
+const orderSentContainer = document.getElementById('order-sent-container')
+const orderSentMessage = document.getElementById('order-sent-message')
+
+// Utility functions
+function toggleHidden(element, isHidden) {
+   element.classList.toggle('hidden', isHidden)
+}
 
 // UI Logic (functions) 
-// In this project, I'll put this function first because it is the 'starting point'
+// Generate HTML for menu items to be rendered
 function getMenuItems() {
    return menuArray.map( item => {
-      const ingredientsList = item.ingredients.map( ingredient => ' ' + ingredient)
+      const ingredientsList = item.ingredients.join(", ")
       return `
          <li class="menu-item">
                <div class="item-image-wrapper">
@@ -23,7 +28,7 @@ function getMenuItems() {
                   <h4 class="item-price">$${item.price}</h4>
                </div>
                <div class="item-btn-wrapper">
-                  <button data-id="${item.id}" class="add-btn">
+                  <button data-action="add" data-id="${item.id}" class="add-btn" aria-label="Add ${item.name} to order">
                      <span class="material-symbols-outlined">add</span>
                   </button>
                </div>
@@ -32,17 +37,41 @@ function getMenuItems() {
    }).join('')
 }
 
-// Logic functions (grouped by purpose) 
-// -- Data Logic (user's order)
+// Show/hide payment modal
+function togglePaymentModal(isHidden) {
+   toggleHidden(paymentModal, isHidden)
+}
+
+// Displays order confirmation message and updates UI state
+function completeOrder(customerName) {
+   toggleHidden(paymentModal, true)
+   toggleHidden(costumerOrder, true)
+   toggleHidden(orderSentContainer, false)
+   toggleHidden(newOrderBtn, false)
+   orderSentMessage.textContent = `Thanks ${customerName}! Your order is on its way!`
+   document.querySelectorAll('[data-action="add"]').forEach(btn => {
+      btn.disabled = true
+      btn.setAttribute('aria-disabled', 'true')
+   })
+}
+
+// Data Logic
+// Updates quantity and price for the order item in the DOM
+function updateItemElement(itemElement, item, quantity) {
+   const quantityEl = itemElement.querySelector('.item-quantity')
+   const priceEl = itemElement.querySelector('.order-item-price')
+   quantityEl.textContent = quantity
+   priceEl.textContent = `$${item.price * quantity}`
+}
+
+// Adds an item to the customer's order and increments its quantity
 function addItem(item) {
-   const existingItem = orderList.querySelector(`[data-id="${item.id.toString()}"]`)
+   const existingItem = orderList.querySelector(`[data-id="${item.id}"]`)
    if (existingItem) {
       const quantityEl = existingItem.querySelector('.item-quantity')
       const currentQty = parseInt(quantityEl.textContent) || 1;
-      quantityEl.textContent = currentQty + 1
-      
-      const priceEl = existingItem.querySelector('.order-item-price')
-      priceEl.textContent = `${item.price * (currentQty + 1)}`
+
+      updateItemElement(existingItem, item, currentQty + 1)
       getTotalPrice()
       return
    }
@@ -50,79 +79,78 @@ function addItem(item) {
       <li class="item-added" data-id="${item.id}">
          <p class="order-item-title">${item.name}</p>
          <p class="item-quantity">1</p>
-         <button class="btn-remove">remove</button>
+         <button data-action="remove" class="btn-remove" aria-label="Remove ${item.name} from order">remove</button>
          <p class="order-item-price">${item.price}</p>
       </li>
    `
    orderList.insertAdjacentHTML('beforeend', itemHtml)
-   getTotalPrice() // Calling getTotalPrices() function
+   getTotalPrice()
 }
 
+// Removes an item from the customer's order and decrements its quantity
 function removeItem(itemToRemove) {
    if (itemToRemove) {
       const quantityEl = itemToRemove.querySelector('.item-quantity')
       const currentQty = parseInt(quantityEl.textContent)
+      const itemId = itemToRemove.dataset.id
+      const item = menuArray.find(item => item.id === parseInt(itemId))
       if (currentQty > 1) {
-         const priceEl = itemToRemove.querySelector('.order-item-price')
-         const unitPrice = parseInt(priceEl.textContent.replace('$', '')) / currentQty
-         quantityEl.textContent = currentQty - 1
-         priceEl.textContent = `${unitPrice * (currentQty - 1)}`
+         updateItemElement(itemToRemove, item, currentQty - 1)
       }
       else {
          itemToRemove.remove()
          if (!orderList.children.length) {
-            costumerOrder.classList.add('hidden') // Hiding user's order section (bottom)
+            toggleHidden(costumerOrder, true) // Hiding user's order section (bottom)
          }
       }
       getTotalPrice()
    }
 }
 
+// Calculates order's total price
 function getTotalPrice() {
    const totalPrice = Array.from(orderList.querySelectorAll('.order-item-price'))
-      .reduce( (total, priceEl) => total + parseInt(priceEl.textContent), 0)
+      .reduce( (total, priceEl) => total + parseInt(priceEl.textContent.replace('$', '')), 0)
    
    document.getElementById('order-total-price').textContent = totalPrice
 }
 
+// Handles adding/removing items from the order
+function handleItemAction(action, itemId, itemElement) {
+   if (action === 'add') {
+      toggleHidden(costumerOrder, false)
+      const selectedItem = menuArray.find(item => item.id === parseInt(itemId))
+      if (selectedItem) addItem(selectedItem)
+   }
+   else if (action === 'remove' && itemElement) {
+      removeItem(itemElement)
+   }
+}
 
 // Event Listeners
 document.addEventListener('click', (e) => {
-   if (e.target.classList.contains('add-btn')) {
-      costumerOrder.classList.remove('hidden') // Showing user's order section (bottom)
-      const itemId = parseInt(e.target.dataset.id)
-      const selectedItem = menuArray.find( item => item.id === itemId)
-      if (selectedItem) {
-         addItem(selectedItem) // Calling the addItem() function
-      }
+   const addBtn = e.target.closest('[data-action="add"]')
+   const removeBtn = e.target.closest('[data-action="remove"]')
+   if (addBtn) {
+      handleItemAction('add', addBtn.dataset.id)
    }
-   else if (e.target.classList.contains('btn-remove')) {
-      const itemToRemove = e.target.closest('.item-added')
-      if (itemToRemove) {
-         removeItem(itemToRemove) // Calling the removeItem() function
-      }
+   else if (removeBtn) {
+      handleItemAction('remove', null, removeBtn.closest('.item-added'))
    }
 })
 
-document.getElementById('complete-order-btn').addEventListener('click', (e) => 
-   paymentModal.classList.remove('hidden'))
+document.getElementById('complete-order-btn').addEventListener('click', () => 
+   togglePaymentModal(false))
+document.getElementById('close-modal-btn').addEventListener('click', () => 
+   togglePaymentModal(true))
 
-document.getElementById('close-modal-btn').addEventListener('click', (e) => 
-   paymentModal.classList.add('hidden'))
-
-document.getElementById('pay-btn').addEventListener('click', (e) => {
-   e.preventDefault() // This is to prevent page reload after click (default behavior)
-   paymentModal.classList.add('hidden')
-   costumerOrder.classList.add('hidden')
-   document.getElementById('order-sent-container').classList.remove('hidden')
-   newOrderBtn.classList.remove('hidden')
-   
+document.getElementById('payment-form').addEventListener('submit', (e) => {
+   e.preventDefault() // To prevent page reload after submit (default behavior)
    const customerName = document.getElementById('customer-name').value
-   document.getElementById('order-sent-message').textContent = 
-      `Thanks, ${customerName}! Your order is on its way!`
+   completeOrder(customerName)
 })
 
 newOrderBtn.addEventListener('click', () => location.reload())
 
 // Initialization
-document.getElementById('menu-list').innerHTML = getMenuItems(menuArray)
+document.getElementById('menu-list').innerHTML = getMenuItems()
